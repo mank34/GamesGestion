@@ -1,9 +1,7 @@
-import pygame
 from envVar import *
 
 
 # TODO: Level
-# TODO: optimize cost/prod
 
 # Class for the tile entity
 class Tile(pygame.sprite.Sprite):
@@ -14,16 +12,11 @@ class Tile(pygame.sprite.Sprite):
         self.type = "empty"
         self.level = 0
 
-        self.poProduction = {
-            "empty": 0,
-            "farm": 5,
-            "market": 5
-        }
-        self.foodProduction = {
-            "empty": 0,
-            "farm": 5,
-            "market": 5
-        }
+        self.production = {}
+        self.set_prod()
+
+        self.cost = {}
+        self.set_cost()
 
         self.set_image()
 
@@ -41,6 +34,8 @@ class Tile(pygame.sprite.Sprite):
     def update_in(self, new_type):
         self.type = new_type
         self.set_image()
+        self.set_prod()
+        self.set_cost()
         self.level = 0
 
     # Apply the filter
@@ -53,3 +48,13 @@ class Tile(pygame.sprite.Sprite):
     def set_image(self):
         self.image = resource[self.type]
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
+
+    def set_prod(self):
+        self.production = dict(po=po_production[self.type],
+                               food=food_production[self.type],
+                               wood=wood_production[self.type])
+
+    def set_cost(self):
+        self.cost = dict(po=po_cost[self.type],
+                         food=food_cost[self.type],
+                         wood=wood_cost[self.type])

@@ -1,4 +1,3 @@
-import pygame
 from envVar import *
 
 
@@ -18,7 +17,7 @@ class MousseIcon(pygame.sprite.Sprite):
         self.isEnable = False
         self.item_selected = "none"
 
-    def set_image(self, path):
-        self.icon = pygame.image.load(path)
+    def set_image(self, image):
+        self.icon = image
         self.icon = pygame.transform.scale(self.icon, (Mousse_icon_size, Mousse_icon_size))
         self.rect = self.icon.get_rect()

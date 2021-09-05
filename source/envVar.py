@@ -1,49 +1,103 @@
 import pygame
 
-GameName = 'GestionGame'
+# Name
+GameName = 'Gestion Game'
 
-black = (128, 128, 128)
-boarderSize = 1
-tileSize = 25
+# Windows configuration
 windowBoarder = 20
-windowSize = 400
-maxFPS = 60  # TODO: Conf
-nb_tile_x = 25  # TODO: Conf
-nb_tile_y = 25  # TODO: Conf
+windowSize = 900
 
+# Game configuration
+maxFPS = 60  # TODO: Conf
+nb_tile_x = 20  # TODO: Conf
+nb_tile_y = 20  # TODO: Conf
+Nb_tick_day = 30000 / maxFPS
+
+default_res = dict(po=500,
+                   food=0,
+                   wood=10)
+
+# Tile configuration
+tileSize = 50
+
+# HUD configuration
 HUD_size = 50
 HUD_margin = 5
 HUD_size_button = HUD_size - 3 * HUD_margin
-
-Mousse_icon_size = 30
-
 Info_text_size = 100
 
-Nb_tick_day = 30000 / maxFPS
+# Mousse configuration
+Mousse_icon_size = 30
 
-BGpath = "../asset/bg.jpg"
-
-EmptyTile = "../asset/tile/empty.jpg"
-FarmTile = "../asset/tile/farm.png"
-MarketTile = "../asset/tile/market.png"
-
-MousseFarm = "../asset/mousseIcon/farm.png"
-MousseMarket = "../asset/mousseIcon/market.png"
-
+# HUD
 ConstructionButton = "../asset/HUD/construction.png"
 Gold_Icon = "../asset/HUD/gold.png"
 Food_Icon = "../asset/HUD/food.png"
+Wood_Icon = "../asset/HUD/wood.png"
 
-construct = {"farm", "market"}
+HUD_main_menu = ["hud_construct"]
+
+HUD_resource = ["hud_res_po", "hud_res_food", "hud_res_wood"]
+
+HUD_construct_menu = ["hud_construct_farm", "hud_construct_market"]
+
+# Background
+BGpath = "../asset/bg.jpg"
+
+# Empty
+EmptyTile = "../asset/tile/empty.jpg"
+
+# Farm
+FarmTile = "../asset/tile/farm.png"
+MousseFarm = "../asset/mousseIcon/farm.png"
+
+# Market
+MarketTile = "../asset/tile/market.png"
+MousseMarket = "../asset/mousseIcon/market.png"
 
 # Load resource
-resource = {
-    "empty": pygame.image.load(EmptyTile),
-    "farm": pygame.image.load(FarmTile),
-    "market": pygame.image.load(MarketTile)
-}
+resource = dict(empty=pygame.image.load(EmptyTile),
+                farm=pygame.image.load(FarmTile),
+                market=pygame.image.load(MarketTile),
+                hud_construct=pygame.image.load(ConstructionButton),
+                hud_construct_farm=pygame.image.load(MousseFarm),
+                hud_construct_market=pygame.image.load(MousseMarket),
+                hud_res_po=pygame.image.load(Gold_Icon),
+                hud_res_food=pygame.image.load(Food_Icon),
+                hud_res_wood=pygame.image.load(Wood_Icon))
+
+# Production
+po_production = dict(farm=0,
+                     empty=0,
+                     market=5)
+
+food_production = dict(empty=0,
+                       farm=5,
+                       market=0)
+
+wood_production = dict(empty=0,
+                       farm=0,
+                       market=0)
+
+# Cost
+po_cost = dict(empty=0,
+               farm=5,
+               market=0)
+
+food_cost = dict(empty=0,
+                 farm=0,
+                 market=5)
+
+wood_cost = dict(empty=0,
+                 farm=0,
+                 market=0)
 
 # Font
 pygame.font.init()
 font = pygame.font.SysFont('Comic Sans MS', int((HUD_size - 2 * HUD_margin) / 2))
+GameNameFont = pygame.font.SysFont('Comic Sans MS', 50)
+GameMenuFont = pygame.font.SysFont('Comic Sans MS', 25)
 
+# Debug
+showFPS = False
+showLoading = False
