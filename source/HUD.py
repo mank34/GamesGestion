@@ -1,9 +1,4 @@
-import pygame
 from envVar import *
-
-# Font
-pygame.font.init()
-font = pygame.font.SysFont('Comic Sans MS', int((HUD_size - 2 * HUD_margin) / 2))
 
 
 # Class for the tile entity
@@ -47,14 +42,16 @@ class HUD(pygame.sprite.Sprite):
 
         # HUD construct button
         self.construct_button = pygame.image.load(ConstructionButton)
-        self.construct_button = pygame.transform.scale(self.construct_button, (HUD_size_button, HUD_size_button))
+        self.construct_button = pygame.transform.scale(self.construct_button,
+                                                       (HUD_size_button, HUD_size_button))
         self.construct_button_rect = self.construct_button.get_rect()
         self.construct_button_rect.x = 0
         self.construct_button_rect.y = windowSize - HUD_size + HUD_margin
 
         # Construct farm
         self.farm_construct_button = pygame.image.load(MousseFarm)
-        self.farm_construct_button = pygame.transform.scale(self.farm_construct_button, (HUD_size_button, HUD_size_button))
+        self.farm_construct_button = pygame.transform.scale(self.farm_construct_button,
+                                                            (HUD_size_button, HUD_size_button))
         self.farm_construct_button_rect = self.farm_construct_button.get_rect()
         self.farm_construct_button_rect.x = HUD_size + HUD_margin
         self.farm_construct_button_rect.y = windowSize - 2 * HUD_size + HUD_margin
@@ -62,7 +59,7 @@ class HUD(pygame.sprite.Sprite):
         # Construct market
         self.market_construct_button = pygame.image.load(MousseMarket)
         self.market_construct_button = pygame.transform.scale(self.market_construct_button,
-                                                            (HUD_size_button, HUD_size_button))
+                                                              (HUD_size_button, HUD_size_button))
         self.market_construct_button_rect = self.market_construct_button.get_rect()
         self.market_construct_button_rect.x = 0 + HUD_margin
         self.market_construct_button_rect.y = windowSize - 2 * HUD_size + HUD_margin

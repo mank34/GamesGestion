@@ -5,25 +5,6 @@ from mousseIcon import MousseIcon
 from envVar import *
 
 
-def move_cam(game):
-    right = False
-    left = False
-    up = False
-    down = False
-
-    if (pygame.mouse.get_pos()[0]) > windowSize - windowBoarder:
-        right = True
-    elif (pygame.mouse.get_pos()[0]) < windowBoarder:
-        left = True
-
-    if (pygame.mouse.get_pos()[1]) > windowSize - windowBoarder:
-        down = True
-    elif (pygame.mouse.get_pos()[1]) < windowBoarder:
-        up = True
-
-    game.move(right, left, up, down)
-
-
 # Class game
 class Game:
     def __init__(self):
@@ -51,8 +32,7 @@ class Game:
 
         for y in range(nb_tile_y):
             for x in range(nb_tile_x):
-                self.tiles[str(y * nb_tile_x + x)] = Tile("empty_" + str(y * nb_tile_x + x),
-                                                          self.start_game_zone["x"] + x * tileSize,
+                self.tiles[str(y * nb_tile_x + x)] = Tile(self.start_game_zone["x"] + x * tileSize,
                                                           self.start_game_zone["y"] + y * tileSize)
                 print(str(int((y * nb_tile_x + x) / (nb_tile_x * nb_tile_y) * 100)) + "%")
 
@@ -62,14 +42,19 @@ class Game:
         # Mousse icon
         self.mousseIcon = MousseIcon()
 
-    def move(self, right, left, up, down):
+    def move(self):
+
+        right = pygame.mouse.get_pos()[0] > windowSize - windowBoarder
+        left = pygame.mouse.get_pos()[0] < windowBoarder
+        up = pygame.mouse.get_pos()[1] < windowBoarder
+        down = pygame.mouse.get_pos()[1] > windowSize - windowBoarder - HUD_size
 
         if right and self.cam_pos["x"] < self.start_game_zone["x"] - windowBoarder:
             right = False
         if left and self.cam_pos["x"] > self.end_game_zone["x"] + windowBoarder:
             left = False
 
-        if down and self.cam_pos["y"] < self.start_game_zone["y"] - windowBoarder:
+        if down and self.cam_pos["y"] < self.start_game_zone["y"] - HUD_size:
             down = False
         if up and self.cam_pos["y"] > self.end_game_zone["y"] + windowBoarder:
             up = False
@@ -86,17 +71,16 @@ class Game:
         self.cam_pos["y"] -= self.cam_velocity * down
 
     def update_prod_value(self):
-
+        # TODO: To optimized
         for tileName in self.tiles:
             # Farm produce only if the city have money
             if self.tiles[tileName].type == "farm":
-                if self.hud.po >= self.tiles[tileName].poProduction:
-                    self.hud.po -= self.tiles[tileName].poProduction
-                    self.hud.food += self.tiles[tileName].foodProduction
+                if self.hud.po >= self.tiles[tileName].poProduction["farm"]:
+                    self.hud.po -= self.tiles[tileName].poProduction["farm"]
+                    self.hud.food += self.tiles[tileName].foodProduction["farm"]
 
             # Market gain money only if food is available
             elif self.tiles[tileName].type == "market":
-                if self.hud.food >= self.tiles[tileName].foodProduction:
-                    self.hud.po += self.tiles[tileName].poProduction
-                    self.hud.food -= self.tiles[tileName].foodProduction
-
+                if self.hud.food >= self.tiles[tileName].foodProduction["market"]:
+                    self.hud.po += self.tiles[tileName].poProduction["market"]
+                    self.hud.food -= self.tiles[tileName].foodProduction["market"]

@@ -1,13 +1,15 @@
-GameName = "GestionGame"
+import pygame
+
+GameName = 'GestionGame'
 
 black = (128, 128, 128)
 boarderSize = 1
 tileSize = 25
-windowBoarder = 10
+windowBoarder = 20
 windowSize = 400
-maxFPS = 75
-nb_tile_x = 10
-nb_tile_y = 10
+maxFPS = 60  # TODO: Conf
+nb_tile_x = 25  # TODO: Conf
+nb_tile_y = 25  # TODO: Conf
 
 HUD_size = 50
 HUD_margin = 5
@@ -22,14 +24,10 @@ Nb_tick_day = 30000 / maxFPS
 BGpath = "../asset/bg.jpg"
 
 EmptyTile = "../asset/tile/empty.jpg"
-EmptyTileOver = "../asset/tile/emptyOver.jpg"
-
 FarmTile = "../asset/tile/farm.png"
-FarmTileOver = "../asset/tile/farmOver.png"
-MousseFarm = "../asset/mousseIcon/farm.png"
-
 MarketTile = "../asset/tile/market.png"
-MarketTileOver = "../asset/tile/marketOver.png"
+
+MousseFarm = "../asset/mousseIcon/farm.png"
 MousseMarket = "../asset/mousseIcon/market.png"
 
 ConstructionButton = "../asset/HUD/construction.png"
@@ -38,4 +36,14 @@ Food_Icon = "../asset/HUD/food.png"
 
 construct = {"farm", "market"}
 
+# Load resource
+resource = {
+    "empty": pygame.image.load(EmptyTile),
+    "farm": pygame.image.load(FarmTile),
+    "market": pygame.image.load(MarketTile)
+}
+
+# Font
+pygame.font.init()
+font = pygame.font.SysFont('Comic Sans MS', int((HUD_size - 2 * HUD_margin) / 2))
 
