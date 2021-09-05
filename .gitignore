@@ -1,0 +1,11 @@
+
+.idea/game.iml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+source/__pycache__/envVar.cpython-39.pyc
+source/__pycache__/game.cpython-39.pyc
+source/__pycache__/HUD.cpython-39.pyc
+source/__pycache__/mousseIcon.cpython-39.pyc
+source/__pycache__/tile.cpython-39.pyc
