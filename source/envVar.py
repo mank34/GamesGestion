@@ -10,17 +10,21 @@ windowBoarder = 50
 FPS_available = [25, 30, 45, 60, 75]
 resolution_available = ["720x480", "1280x720", "1920x1080", "Full screen"]
 
-nb_tile_x = 20
-nb_tile_y = 20
+nb_tile_x = 10
+nb_tile_y = 10
 
 default_res = dict(po=500,
                    food=0,
                    wood=10)
 
 # Tile configuration
-tileSize_x = 128
-tileSize_y = 64
-tile_factor_size = 2
+tileSize_x = 127
+tileSize_base = 62
+tileSize_y = dict(empty=63,
+                  farm=79)
+
+
+tile_factor_size = 1
 
 # HUD configuration
 HUD_size = 50

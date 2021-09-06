@@ -4,7 +4,7 @@ from envVar import *
 # Class for the tile entity
 class Tile(pygame.sprite.Sprite):
 
-    def __init__(self, x=windowBoarder, y=windowBoarder):
+    def __init__(self, pos_x, pos_y):
         super().__init__()
 
         self.type = "empty"
@@ -19,8 +19,8 @@ class Tile(pygame.sprite.Sprite):
         self.set_image()
 
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
     # Apply a filter on the over tile
     def set_over(self, isOver):
@@ -30,6 +30,7 @@ class Tile(pygame.sprite.Sprite):
 
     # Change the tile's type (level reset)
     def update_in(self, new_type):
+        self.rect.y -= (tileSize_y[new_type] - tileSize_y[self.type])
         self.type = new_type
         self.set_image()
         self.set_prod()
@@ -46,7 +47,8 @@ class Tile(pygame.sprite.Sprite):
     def set_image(self):
         self.image = resource[self.type]
         self.image = pygame.transform.scale(self.image,
-                                            (int(tileSize_x/tile_factor_size), int(tileSize_x/tile_factor_size)))
+                                            (int(tileSize_x / tile_factor_size),
+                                             int((tileSize_base+tileSize_y[self.type]) / tile_factor_size)))
 
     def set_prod(self):
         self.production = dict(po=po_production[self.type],

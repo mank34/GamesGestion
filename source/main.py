@@ -1,6 +1,8 @@
 from game import Game
 from envVar import *
 
+# TODO: Mettre le marché en iso
+
 # PyGame init
 pygame.init()
 

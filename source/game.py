@@ -101,14 +101,7 @@ class Game:
 
         # Define the game zone
         self.game_zone_x = (tileSize_x / tile_factor_size) * nb_tile_x
-        self.game_zone_y = (tileSize_y / tile_factor_size) * nb_tile_y
-
-
-
-        #        self.start_game_zone = dict(x=int(-nb_tile_x / 2 * tileSize) + self.width / 2,
-        #                                    y=int(-nb_tile_y / 2 * tileSize) + self.height / 2)
-        #        self.end_game_zone = dict(x=int(nb_tile_x / 2 * tileSize) - self.width / 2,
-        #                                  y=int(nb_tile_y / 2 * tileSize) - self.height / 2)
+        self.game_zone_y = (tileSize_y["empty"] / tile_factor_size) * nb_tile_y
 
         # Generate all the tiles
         self.tiles = {}
@@ -116,9 +109,9 @@ class Game:
         for y in range(nb_tile_y):
             for x in range(nb_tile_x):
                 self.tiles[str(y * nb_tile_x + x)] = Tile(self.width / 2 +
-                                                          (x - y) * tileSize_x / 2 / tile_factor_size,
-                                                          -self.game_zone_y / 2 + self.height/2 +
-                                                          (x + y) * tileSize_y / 2 / tile_factor_size)
+                                                          (x - y) * (tileSize_x / 2 / tile_factor_size),
+                                                          -self.game_zone_y / 2 + self.height / 2 +
+                                                          (x + y) * (tileSize_y["empty"] / 2 / tile_factor_size))
                 if showLoading:
                     print(str(int((y * nb_tile_x + x) / (nb_tile_x * nb_tile_y) * 100)) + "%")
 
@@ -173,8 +166,9 @@ class Game:
             print("Day " + str(self.nb_day))
 
         # Check mouse position
+
         for tileName in self.tiles:
-            self.tiles[tileName].set_over(self.tiles[tileName].rect.collidepoint(pygame.mouse.get_pos()))
+            self.tiles[tileName].set_over(self.is_in(tileName))
 
         # Camera move only if all the menu are close
         cam_move = True
@@ -200,8 +194,6 @@ class Game:
 
         shift_y = (self.game_zone_y - self.height - HUD_size) / 2
 
-        print(str(shift_x) + " " + str(shift_y))
-
         if shift_x > 0:
             if right and self.cam_pos["x"] <= -shift_x - windowBoarder:
                 right = False
@@ -212,7 +204,7 @@ class Game:
             left = False
 
         if shift_y > 0:
-            if down and self.cam_pos["y"] <= -shift_y - tileSize_x/tile_factor_size - windowBoarder :
+            if down and self.cam_pos["y"] <= -shift_y - tileSize_x / tile_factor_size - windowBoarder:
                 down = False
             if up and self.cam_pos["y"] >= shift_y + windowBoarder:
                 up = False
@@ -266,7 +258,7 @@ class Game:
 
                 else:
                     for tileName in self.tiles:
-                        if self.tiles[tileName].rect.collidepoint(pygame.mouse.get_pos()):
+                        if self.is_in(tileName):
                             print("Tile " + tileName + " clicked")
                             if self.mousseIcon.isEnable:
                                 self.tiles[tileName].update_in(self.mousseIcon.item_selected)
@@ -339,3 +331,49 @@ class Game:
                                                           False, (0, 0, 0))
 
         return "NULL"
+
+    def is_in(self, tileName):
+        point = pygame.mouse.get_pos()
+
+        A = (self.tiles[tileName].rect.x + tileSize_x / 2 / tile_factor_size,
+             self.tiles[tileName].rect.y)
+        B = (self.tiles[tileName].rect.x,
+             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / 2 / tile_factor_size)
+        C = (self.tiles[tileName].rect.x + tileSize_x / 2 / tile_factor_size,
+             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / tile_factor_size)
+        D = (self.tiles[tileName].rect.x + tileSize_x / tile_factor_size,
+             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / 2 / tile_factor_size)
+
+        # Algo
+        # result = (yp - y1) * (x2 -x1) - (xp - x1) * (y2 - y1)
+        # result > 0: the point is to left of the line
+        # result = 0: the point is on of the line
+        # result < 0: the point is to right of the line
+
+        cond_1 = False
+        cond_2 = False
+        cond_3 = False
+        cond_4 = False
+
+        # The point is in if:
+        # cond_1: the point is to left of the AB line
+        result = (point[1] - A[1]) * (B[0] - A[0]) - (point[0] - A[0]) * (B[1] - A[1])
+        if result <= 0:
+            cond_1 = True
+
+        # cond_2: the point is to left of the BC line
+        result = (point[1] - B[1]) * (C[0] - B[0]) - (point[0] - B[0]) * (C[1] - B[1])
+        if result <= 0:
+            cond_2 = True
+
+        # cond_3: the point is to right of the DC line
+        result = (point[1] - D[1]) * (C[0] - D[0]) - (point[0] - D[0]) * (C[1] - D[1])
+        if result > 0:
+            cond_3 = True
+
+        # cond_4: the point is to right of the AD line
+        result = (point[1] - A[1]) * (D[0] - A[0]) - (point[0] - A[0]) * (D[1] - A[1])
+        if result > 0:
+            cond_4 = True
+
+        return cond_1 and cond_2 and cond_3 and cond_4
