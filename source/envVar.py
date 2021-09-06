@@ -4,21 +4,23 @@ import pygame
 GameName = 'Gestion Game'
 
 # Windows configuration
-windowBoarder = 20
-windowSize = 900
+windowBoarder = 50
 
 # Game configuration
-maxFPS = 60  # TODO: Conf
-nb_tile_x = 20  # TODO: Conf
-nb_tile_y = 20  # TODO: Conf
-Nb_tick_day = 30000 / maxFPS
+FPS_available = [25, 30, 45, 60, 75]
+resolution_available = ["720x480", "1280x720", "1920x1080", "Full screen"]
+
+nb_tile_x = 20
+nb_tile_y = 20
 
 default_res = dict(po=500,
                    food=0,
                    wood=10)
 
 # Tile configuration
-tileSize = 50
+tileSize_x = 128
+tileSize_y = 64
+tile_factor_size = 2
 
 # HUD configuration
 HUD_size = 50
@@ -45,7 +47,7 @@ HUD_construct_menu = ["hud_construct_farm", "hud_construct_market"]
 BGpath = "../asset/bg.jpg"
 
 # Empty
-EmptyTile = "../asset/tile/empty.jpg"
+EmptyTile = "../asset/tile/empty.png"
 
 # Farm
 FarmTile = "../asset/tile/farm.png"

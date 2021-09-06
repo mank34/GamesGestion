@@ -1,8 +1,6 @@
 from envVar import *
 
 
-# TODO: Level
-
 # Class for the tile entity
 class Tile(pygame.sprite.Sprite):
 
@@ -47,7 +45,8 @@ class Tile(pygame.sprite.Sprite):
     # Set the image
     def set_image(self):
         self.image = resource[self.type]
-        self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
+        self.image = pygame.transform.scale(self.image,
+                                            (int(tileSize_x/tile_factor_size), int(tileSize_x/tile_factor_size)))
 
     def set_prod(self):
         self.production = dict(po=po_production[self.type],
