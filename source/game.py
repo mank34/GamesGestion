@@ -1,18 +1,19 @@
 from HUD import HUD
-from tile import Tile
-from mousseIcon import MousseIcon
+from configMenu import configMenu
 from envVar import *
+from mainMenu import mainMenu
+from mousseIcon import MousseIcon
+from tile import Tile
 
 
 # Class game
 class Game:
     def __init__(self, w, h):
 
-        self.FPS_selected = 3
-        self.res_selected = 3
-
         self.width = w
         self.height = h
+
+        self.tile_factor_size = 2
 
         # Flag to known the game state
         self.is_starting = False
@@ -20,67 +21,10 @@ class Game:
         self.in_configuring = False
 
         # Game menu
-        self.game_name = GameNameFont.render(GameName, False, (0, 0, 0))
-        self.game_name_rect = self.game_name.get_rect()
-        self.game_name_rect.x = int(self.width * 0.33)
-        self.game_name_rect.y = int(self.height * 0.25)
-
-        self.game_start = GameMenuFont.render("Start", False, (0, 0, 0))
-        self.game_start_rect = self.game_start.get_rect()
-        self.game_start_rect.x = int(self.width * 0.45)
-        self.game_start_rect.y = int(self.height * 0.4)
-
-        self.game_option = GameMenuFont.render("Options", False, (0, 0, 0))
-        self.game_option_rect = self.game_option.get_rect()
-        self.game_option_rect.x = int(self.width * 0.44)
-        self.game_option_rect.y = int(self.height * 0.45)
-
-        self.game_quit = GameMenuFont.render("Quit", False, (0, 0, 0))
-        self.game_quit_rect = self.game_quit.get_rect()
-        self.game_quit_rect.x = int(self.width * 0.46)
-        self.game_quit_rect.y = int(self.height * 0.50)
+        self.main_menu = mainMenu(w, h)
 
         # Config menu
-        self.option_name = GameNameFont.render("Option", False, (0, 0, 0))
-        self.option_name_rect = self.option_name.get_rect()
-        self.option_name_rect.x = int(self.width * 0.4)
-        self.option_name_rect.y = int(self.height * 0.25)
-
-        self.lessFPS_button = GameMenuFont.render("<-", False, (0, 0, 0))
-        self.lessFPS_button_rect = self.lessFPS_button.get_rect()
-        self.lessFPS_button_rect.x = int(self.width * 0.38)
-        self.lessFPS_button_rect.y = int(self.height * 0.4)
-
-        self.limitFPS = GameMenuFont.render("Max FPS: " + str(FPS_available[self.FPS_selected]), False, (0, 0, 0))
-        self.limitFPS_rect = self.limitFPS.get_rect()
-        self.limitFPS_rect.x = int(self.width * 0.42)
-        self.limitFPS_rect.y = int(self.height * 0.4)
-
-        self.moreFPS_button = GameMenuFont.render("->", False, (0, 0, 0))
-        self.moreFPS_button_rect = self.moreFPS_button.get_rect()
-        self.moreFPS_button_rect.x = int(self.width * 0.60)
-        self.moreFPS_button_rect.y = int(self.height * 0.4)
-
-        self.lessRes_button = GameMenuFont.render("<-", False, (0, 0, 0))
-        self.lessRes_button_rect = self.lessRes_button.get_rect()
-        self.lessRes_button_rect.x = int(self.width * 0.38)
-        self.lessRes_button_rect.y = int(self.height * 0.5)
-
-        self.resolution = GameMenuFont.render("Resolution: " + str(resolution_available[self.res_selected]),
-                                              False, (0, 0, 0))
-        self.resolution_rect = self.resolution.get_rect()
-        self.resolution_rect.x = int(self.width * 0.42)
-        self.resolution_rect.y = int(self.height * 0.5)
-
-        self.moreRes_button = GameMenuFont.render("->", False, (0, 0, 0))
-        self.moreRes_button_rect = self.moreRes_button.get_rect()
-        self.moreRes_button_rect.x = int(self.width * 0.60)
-        self.moreRes_button_rect.y = int(self.height * 0.5)
-
-        self.back_button = GameMenuFont.render("Back", False, (0, 0, 0))
-        self.back_button_rect = self.back_button.get_rect()
-        self.back_button_rect.x = int(self.width * 0.46)
-        self.back_button_rect.y = int(self.height * 0.6)
+        self.config_menu = configMenu(w, h)
 
         # Init var to count a day duration
         self.cnt_day = 0
@@ -100,18 +44,19 @@ class Game:
         }
 
         # Define the game zone
-        self.game_zone_x = (tileSize_x / tile_factor_size) * nb_tile_x
-        self.game_zone_y = (tileSize_y["empty"] / tile_factor_size) * nb_tile_y
+        self.game_zone_x = (tileSize_x / self.tile_factor_size) * nb_tile_x
+        self.game_zone_y = (tileSize_y["empty"] / self.tile_factor_size) * nb_tile_y
 
         # Generate all the tiles
         self.tiles = {}
 
         for y in range(nb_tile_y):
             for x in range(nb_tile_x):
-                self.tiles[str(y * nb_tile_x + x)] = Tile(self.width / 2 +
-                                                          (x - y) * (tileSize_x / 2 / tile_factor_size),
-                                                          -self.game_zone_y / 2 + self.height / 2 +
-                                                          (x + y) * (tileSize_y["empty"] / 2 / tile_factor_size))
+                pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
+                tile_Size_y = tileSize_y["empty"]
+                pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (tile_Size_y / 2 / self.tile_factor_size)
+                self.tiles[str(y * nb_tile_x + x)] = Tile(pos_x, pos_y, self.tile_factor_size)
+
                 if showLoading:
                     print(str(int((y * nb_tile_x + x) / (nb_tile_x * nb_tile_y) * 100)) + "%")
 
@@ -120,27 +65,6 @@ class Game:
 
         # Mousse icon
         self.mousseIcon = MousseIcon()
-
-    def menu(self, screen):
-        if self.is_pausing:
-            self.game_start = GameMenuFont.render("Resume", False, (0, 0, 0))
-        else:
-            self.game_start = GameMenuFont.render("Start", False, (0, 0, 0))
-
-        screen.blit(self.game_name, self.game_name_rect)
-        screen.blit(self.game_start, self.game_start_rect)
-        screen.blit(self.game_option, self.game_option_rect)
-        screen.blit(self.game_quit, self.game_quit_rect)
-
-    def option_menu(self, screen):
-        screen.blit(self.option_name, self.option_name_rect)
-        screen.blit(self.lessFPS_button, self.lessFPS_button_rect)
-        screen.blit(self.limitFPS, self.limitFPS_rect)
-        screen.blit(self.moreFPS_button, self.moreFPS_button_rect)
-        screen.blit(self.lessRes_button, self.lessRes_button_rect)
-        screen.blit(self.resolution, self.resolution_rect)
-        screen.blit(self.moreRes_button, self.moreRes_button_rect)
-        screen.blit(self.back_button, self.back_button_rect)
 
     def update(self, screen):
         # Display tile
@@ -158,7 +82,7 @@ class Game:
 
         # Manage day
         self.cnt_day += 1
-        if self.cnt_day > 30000 / FPS_available[self.FPS_selected]:
+        if self.cnt_day > 30000 / FPS_available[self.config_menu.FPS_selected]:
             # Update resource
             self.update_prod_value()
             self.cnt_day = 0
@@ -166,9 +90,8 @@ class Game:
             print("Day " + str(self.nb_day))
 
         # Check mouse position
-
         for tileName in self.tiles:
-            self.tiles[tileName].set_over(self.is_in(tileName))
+            self.tiles[tileName].set_over(self.tiles[tileName].is_in(self.tile_factor_size), self.tile_factor_size)
 
         # Camera move only if all the menu are close
         cam_move = True
@@ -204,7 +127,7 @@ class Game:
             left = False
 
         if shift_y > 0:
-            if down and self.cam_pos["y"] <= -shift_y - tileSize_x / tile_factor_size - windowBoarder:
+            if down and self.cam_pos["y"] <= -shift_y - tileSize_x / self.tile_factor_size - windowBoarder:
                 down = False
             if up and self.cam_pos["y"] >= shift_y + windowBoarder:
                 up = False
@@ -258,10 +181,10 @@ class Game:
 
                 else:
                     for tileName in self.tiles:
-                        if self.is_in(tileName):
+                        if self.tiles[tileName].is_in(self.tile_factor_size):
                             print("Tile " + tileName + " clicked")
                             if self.mousseIcon.isEnable:
-                                self.tiles[tileName].update_in(self.mousseIcon.item_selected)
+                                self.tiles[tileName].update_in(self.mousseIcon.item_selected, self.tile_factor_size)
                                 self.mousseIcon.isEnable = False
 
                 self.disable_all_hud()
@@ -284,96 +207,26 @@ class Game:
             self.is_starting = False
             self.is_pausing = True
 
-    def check_menu_event(self, event):
-        running = True
-        # Mouse event - clique left
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0]:
-            if self.game_start_rect.collidepoint(pygame.mouse.get_pos()):
-                self.is_starting = True
-                self.is_pausing = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
+            self.tile_factor_size -= 0.5
+            if self.tile_factor_size <= 0:
+                self.tile_factor_size = 0.5
 
-            elif self.game_option_rect.collidepoint(pygame.mouse.get_pos()):
-                self.in_configuring = True
+            for y in range(nb_tile_y):
+                for x in range(nb_tile_x):
+                    pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
+                    tile_Size_y = tileSize_y[self.tiles[str(y * nb_tile_x + x)].type]
+                    pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (
+                            tile_Size_y / 2 / self.tile_factor_size)
+                    self.tiles[str(y * nb_tile_x + x)].update_size(pos_x, pos_y)
 
-            elif self.game_quit_rect.collidepoint(pygame.mouse.get_pos()):
-                running = False
-        return running
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
+            self.tile_factor_size += 0.5
 
-    def check_option_event(self, event):
-        # Mouse event - clique left
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0]:
-            if self.back_button_rect.collidepoint(pygame.mouse.get_pos()):
-                self.in_configuring = False
-                return resolution_available[self.res_selected]
-
-            elif self.lessFPS_button_rect.collidepoint(pygame.mouse.get_pos()):
-                if self.FPS_selected > 0:
-                    self.FPS_selected -= 1
-                    self.limitFPS = GameMenuFont.render("Max FPS: " + str(FPS_available[self.FPS_selected]),
-                                                        False, (0, 0, 0))
-
-            elif self.moreFPS_button_rect.collidepoint(pygame.mouse.get_pos()):
-                if self.FPS_selected < len(FPS_available) - 1:
-                    self.FPS_selected += 1
-                    self.limitFPS = GameMenuFont.render("Max FPS: " + str(FPS_available[self.FPS_selected]),
-                                                        False, (0, 0, 0))
-
-            elif self.lessRes_button_rect.collidepoint(pygame.mouse.get_pos()):
-                if self.res_selected > 0:
-                    self.res_selected -= 1
-                    self.resolution = GameMenuFont.render("Resolution: " + str(resolution_available[self.res_selected]),
-                                                          False, (0, 0, 0))
-
-            elif self.moreRes_button_rect.collidepoint(pygame.mouse.get_pos()):
-                if self.res_selected < len(resolution_available) - 1:
-                    self.res_selected += 1
-                    self.resolution = GameMenuFont.render("Resolution: " + str(resolution_available[self.res_selected]),
-                                                          False, (0, 0, 0))
-
-        return "NULL"
-
-    def is_in(self, tileName):
-        point = pygame.mouse.get_pos()
-
-        A = (self.tiles[tileName].rect.x + tileSize_x / 2 / tile_factor_size,
-             self.tiles[tileName].rect.y)
-        B = (self.tiles[tileName].rect.x,
-             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / 2 / tile_factor_size)
-        C = (self.tiles[tileName].rect.x + tileSize_x / 2 / tile_factor_size,
-             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / tile_factor_size)
-        D = (self.tiles[tileName].rect.x + tileSize_x / tile_factor_size,
-             self.tiles[tileName].rect.y + tileSize_y[self.tiles[tileName].type] / 2 / tile_factor_size)
-
-        # Algo
-        # result = (yp - y1) * (x2 -x1) - (xp - x1) * (y2 - y1)
-        # result > 0: the point is to left of the line
-        # result = 0: the point is on of the line
-        # result < 0: the point is to right of the line
-
-        cond_1 = False
-        cond_2 = False
-        cond_3 = False
-        cond_4 = False
-
-        # The point is in if:
-        # cond_1: the point is to left of the AB line
-        result = (point[1] - A[1]) * (B[0] - A[0]) - (point[0] - A[0]) * (B[1] - A[1])
-        if result <= 0:
-            cond_1 = True
-
-        # cond_2: the point is to left of the BC line
-        result = (point[1] - B[1]) * (C[0] - B[0]) - (point[0] - B[0]) * (C[1] - B[1])
-        if result <= 0:
-            cond_2 = True
-
-        # cond_3: the point is to right of the DC line
-        result = (point[1] - D[1]) * (C[0] - D[0]) - (point[0] - D[0]) * (C[1] - D[1])
-        if result > 0:
-            cond_3 = True
-
-        # cond_4: the point is to right of the AD line
-        result = (point[1] - A[1]) * (D[0] - A[0]) - (point[0] - A[0]) * (D[1] - A[1])
-        if result > 0:
-            cond_4 = True
-
-        return cond_1 and cond_2 and cond_3 and cond_4
+            for y in range(nb_tile_y):
+                for x in range(nb_tile_x):
+                    pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
+                    tile_Size_y = tileSize_y[self.tiles[str(y * nb_tile_x + x)].type]
+                    pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (
+                            tile_Size_y / 2 / self.tile_factor_size)
+                    self.tiles[str(y * nb_tile_x + x)].update_size(pos_x, pos_y)

@@ -23,9 +23,6 @@ tileSize_base = 62
 tileSize_y = dict(empty=63,
                   farm=79)
 
-
-tile_factor_size = 1
-
 # HUD configuration
 HUD_size = 50
 HUD_margin = 5

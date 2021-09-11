@@ -1,7 +1,7 @@
 from game import Game
 from envVar import *
 
-# TODO: Mettre le marché en iso
+# TODO: Market in iso
 
 # PyGame init
 pygame.init()
@@ -10,10 +10,10 @@ pygame.init()
 pygame.display.set_caption(GameName)
 
 resolution = pygame.display.Info()  # Get the users resolution
-width = resolution.current_w
-height = resolution.current_h
+width = 500  # resolution.current_w
+height = 500  # resolution.current_h
 
-screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN | pygame.SCALED)
+screen = pygame.display.set_mode((width, height))  # , pygame.FULLSCREEN | pygame.SCALED)
 
 # Load BackGround
 background = pygame.image.load(BGpath)
@@ -37,7 +37,7 @@ def quit_game():
 while running:
 
     # Limit FPS
-    clock.tick(FPS_available[game.FPS_selected])
+    clock.tick(FPS_available[game.config_menu.FPS_selected])
     if showFPS:
         print("FPS: " + str(int(clock.get_fps())))
 
@@ -46,12 +46,12 @@ while running:
 
     # The game is update only if is_starting is true
     if game.in_configuring:
-        game.option_menu(screen)
+        game.config_menu.update(screen)
     elif game.is_starting:
         game.update(screen)
     # Game menu
     else:
-        game.menu(screen)
+        game.main_menu.update(screen, game.is_pausing)
 
     # Update screen
     pygame.display.flip()
@@ -64,8 +64,9 @@ while running:
             running = quit_game()
 
         elif game.in_configuring:
-            res = game.check_option_event(event)
+            res = game.config_menu.check_event(event)
             if res != "NULL":
+                game.in_configuring = False
                 if res == "Full screen":
                     screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN | pygame.SCALED)
                 else:
@@ -76,5 +77,10 @@ while running:
             game.check_game_event(event)
 
         else:
-            if not game.check_menu_event(event):
+            running, game.is_starting, game.is_pausing, game.in_configuring = \
+                game.main_menu.check_event(event,
+                                           game.is_starting,
+                                           game.is_pausing,
+                                           game.in_configuring)
+            if not running:
                 running = quit_game()
