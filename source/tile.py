@@ -22,6 +22,8 @@ class Tile(pygame.sprite.Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
 
+        self.gap_y = 0
+
     # Apply a filter on the over tile
     def set_over(self, isOver, tile_factor_size):
         self.set_image(tile_factor_size)
@@ -30,7 +32,8 @@ class Tile(pygame.sprite.Sprite):
 
     # Change the tile's type (level reset)
     def update_in(self, new_type, tile_factor_size):
-        self.rect.y -= (tileSize_y[new_type] - tileSize_y[self.type])/tile_factor_size
+        self.gap_y = (tileSize_y[new_type] - tileSize_y[self.type])
+        self.rect.y -= self.gap_y/tile_factor_size
         self.type = new_type
         self.set_image(tile_factor_size)
         self.set_prod()

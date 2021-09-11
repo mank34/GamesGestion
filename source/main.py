@@ -53,9 +53,6 @@ while running:
     else:
         game.main_menu.update(screen, game.is_pausing)
 
-    # Update screen
-    pygame.display.flip()
-
     # Check the pygame's event
     for event in pygame.event.get():
 
@@ -74,7 +71,7 @@ while running:
                     screen = pygame.display.set_mode((500, 500))
 
         elif game.is_starting:
-            game.check_game_event(event)
+            game.check_game_event(event, screen)
 
         else:
             running, game.is_starting, game.is_pausing, game.in_configuring = \
@@ -84,3 +81,7 @@ while running:
                                            game.in_configuring)
             if not running:
                 running = quit_game()
+
+    # Update screen
+    if running:
+        pygame.display.flip()

@@ -50,16 +50,16 @@ class Game:
         # Generate all the tiles
         self.tiles = {}
 
+        self.init = False
         for y in range(nb_tile_y):
             for x in range(nb_tile_x):
-                pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
-                tile_Size_y = tileSize_y["empty"]
-                pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (tile_Size_y / 2 / self.tile_factor_size)
+                pos_x, pos_y = self.calculate_positioning(x, y, 0)
                 self.tiles[str(y * nb_tile_x + x)] = Tile(pos_x, pos_y, self.tile_factor_size)
 
                 if showLoading:
                     print(str(int((y * nb_tile_x + x) / (nb_tile_x * nb_tile_y) * 100)) + "%")
 
+        self.init = True
         # HUD
         self.hud = HUD(self.width, self.height)
 
@@ -114,7 +114,6 @@ class Game:
         down = down and pygame.mouse.get_pos()[1] < self.height - HUD_size
 
         shift_x = (self.game_zone_x - self.width) / 2
-
         shift_y = (self.game_zone_y - self.height - HUD_size) / 2
 
         if shift_x > 0:
@@ -166,7 +165,7 @@ class Game:
         for menu_HUD in self.show_HUD:
             self.show_HUD[menu_HUD] = False
 
-    def check_game_event(self, event):
+    def check_game_event(self, event, screen):
 
         # Mouse event - clique left
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0]:
@@ -208,25 +207,36 @@ class Game:
             self.is_pausing = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
-            self.tile_factor_size -= 0.5
-            if self.tile_factor_size <= 0:
-                self.tile_factor_size = 0.5
+            self.tile_factor_size -= 0.4
+            if self.tile_factor_size <= 1:
+                self.tile_factor_size = 1
 
-            for y in range(nb_tile_y):
-                for x in range(nb_tile_x):
-                    pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
-                    tile_Size_y = tileSize_y[self.tiles[str(y * nb_tile_x + x)].type]
-                    pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (
-                            tile_Size_y / 2 / self.tile_factor_size)
-                    self.tiles[str(y * nb_tile_x + x)].update_size(pos_x, pos_y)
+            self.update_tiles_resizing(screen)
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
-            self.tile_factor_size += 0.5
+            self.tile_factor_size += 0.4
+            if self.tile_factor_size >= 5:
+                self.tile_factor_size = 5
 
-            for y in range(nb_tile_y):
-                for x in range(nb_tile_x):
-                    pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
-                    tile_Size_y = tileSize_y[self.tiles[str(y * nb_tile_x + x)].type]
-                    pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (
-                            tile_Size_y / 2 / self.tile_factor_size)
-                    self.tiles[str(y * nb_tile_x + x)].update_size(pos_x, pos_y)
+            self.update_tiles_resizing(screen)
+
+    def calculate_positioning(self, x, y, gap_y):
+        pos_x = self.width / 2 + (x - y) * (tileSize_x / 2 / self.tile_factor_size)
+
+        pos_y = -self.game_zone_y / 2 + self.height / 2 + (x + y) * (tileSize_y["empty"] / 2 / self.tile_factor_size)
+        pos_y -= gap_y / self.tile_factor_size
+        return pos_x, pos_y
+
+    def update_tiles_resizing(self, screen):
+        for y in range(nb_tile_y):
+            for x in range(nb_tile_x):
+                pos_x, pos_y = self.calculate_positioning(x, y, self.tiles[str(y * nb_tile_x + x)].gap_y)
+                self.tiles[str(y * nb_tile_x + x)].update_size(pos_x, pos_y)
+
+        self.game_zone_x = (tileSize_x / self.tile_factor_size) * nb_tile_x
+        self.game_zone_y = (tileSize_y["empty"] / self.tile_factor_size) * nb_tile_y
+
+        if self.init:
+            for tileName in self.tiles:
+                self.tiles[tileName].set_image(self.tile_factor_size)
+                screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
