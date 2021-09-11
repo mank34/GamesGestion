@@ -30,7 +30,7 @@ class Tile(pygame.sprite.Sprite):
 
     # Change the tile's type (level reset)
     def update_in(self, new_type, tile_factor_size):
-        self.rect.y -= (tileSize_y[new_type] - tileSize_y[self.type])
+        self.rect.y -= (tileSize_y[new_type] - tileSize_y[self.type])/tile_factor_size
         self.type = new_type
         self.set_image(tile_factor_size)
         self.set_prod()
@@ -68,9 +68,11 @@ class Tile(pygame.sprite.Sprite):
     def is_in(self, tile_factor_size):
         point = pygame.mouse.get_pos()
 
-        A = (self.rect.x + tileSize_x / 2 / tile_factor_size, self.rect.y)
-        B = (self.rect.x, self.rect.y + tileSize_y[self.type] / 2 / tile_factor_size)
-        C = (self.rect.x + tileSize_x / 2 / tile_factor_size, self.rect.y + tileSize_y[self.type] / tile_factor_size)
+        A = (self.rect.x + tileSize_x / 2 / tile_factor_size,
+             self.rect.y + (tileSize_y[self.type] - tileSize_y["empty"])/tile_factor_size)
+        B = (self.rect.x, self.rect.y + tileSize_y["empty"] / 2 / tile_factor_size)
+        C = (self.rect.x + tileSize_x / 2 / tile_factor_size,
+             self.rect.y + tileSize_y[self.type] / tile_factor_size)
         D = (self.rect.x + tileSize_x / tile_factor_size, self.rect.y + tileSize_y[self.type] / 2 / tile_factor_size)
 
         # Algo
