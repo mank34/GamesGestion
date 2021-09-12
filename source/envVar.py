@@ -101,7 +101,7 @@ wood_cost = dict(empty=0,
 day_duration = 30000
 
 # Construction time
-construction_time = dict(empty=day_duration * 3,
+construction_time = dict(empty=day_duration*0,
                          farm=day_duration * 3,
                          market=day_duration * 3)
 

@@ -75,16 +75,12 @@ class Game:
     def update(self, screen):
 
         # Display tile
-        update_screen = False
         for tileName in self.tiles:
             if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
                     self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
 
                 self.tiles[tileName].set_over(self.tiles[tileName].is_in(
                     self.tile_factor_size, pygame.mouse.get_pos()), self.tile_factor_size)
-
-                if self.tiles[tileName].shall_be_update:
-                    update_screen = True
 
         # Manage day
         self.cnt_day += 1
@@ -107,18 +103,16 @@ class Game:
                 cam_move = False
 
         if cam_move:
-            update_screen = update_screen or self.move()
+            self.move()
 
         # Tile
-        update_screen = True
-        if update_screen:
-            for tileName in self.tiles:
-                if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
-                        self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
-                    screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
+        for tileName in self.tiles:
+            if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
+                    self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
+                screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
 
-                self.tiles[tileName].show_progress_construction(screen, FPS_available[self.config_menu.FPS_selected],
-                                                                self.tile_factor_size)
+            self.tiles[tileName].show_progress_construction(screen, FPS_available[self.config_menu.FPS_selected],
+                                                            self.tile_factor_size)
 
         # Citizen
         self.cnt_move_entity += 1
@@ -199,8 +193,6 @@ class Game:
             self.cam_pos["y"] += self.cam_velocity * up
             self.cam_pos["y"] -= self.cam_velocity * down
 
-        return left or right or up or down
-
     def update_prod_value(self):
         for tileName in self.tiles:
             res_available = True
@@ -225,7 +217,8 @@ class Game:
         # Mouse event - clique left
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0]:
             # Click on tile
-            previously_open = self.disable_all_tile_information()
+            previously_open = self.one_information_is_open()
+            disable_tile_information = True
             if pygame.mouse.get_pos()[1] < self.height - HUD_size:
                 if self.show_HUD["hud_construct"]:
                     for menu in self.hud.construct_HUD_button:
@@ -236,7 +229,11 @@ class Game:
 
                 else:
                     for tileName in self.tiles:
-                        if self.tiles[tileName].is_in(self.tile_factor_size, pygame.mouse.get_pos()):
+                        if self.tiles[tileName].show_information_enable and \
+                                self.tiles[tileName].remove_button_rect.collidepoint(pygame.mouse.get_pos()):
+                            self.tiles[tileName].update_in("empty", self.tile_factor_size)
+
+                        elif self.tiles[tileName].is_in(self.tile_factor_size, pygame.mouse.get_pos()):
                             print("Tile " + tileName + " clicked")
                             if self.mousseIcon.isEnable:
                                 self.tiles[tileName].update_in(self.mousseIcon.item_selected, self.tile_factor_size)
@@ -244,6 +241,7 @@ class Game:
                             else:
                                 if not previously_open:
                                     self.tiles[tileName].show_information(pygame.mouse.get_pos(), self.width, screen)
+                                    disable_tile_information = False
 
                 self.disable_all_hud()
 
@@ -255,6 +253,9 @@ class Game:
                         self.show_HUD[menu] = True
                     else:
                         self.disable_all_hud()
+
+            if disable_tile_information:
+                self.disable_all_tile_information()
 
         # Mouse event - clique right
         elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[2]:
@@ -305,5 +306,9 @@ class Game:
         for tileName in self.tiles:
             if self.tiles[tileName].show_information_enable:
                 self.tiles[tileName].show_information_enable = False
+
+    def one_information_is_open(self):
+        for tileName in self.tiles:
+            if self.tiles[tileName].show_information_enable:
                 return True
         return False

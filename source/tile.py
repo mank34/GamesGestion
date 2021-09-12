@@ -291,7 +291,7 @@ class Tile(pygame.sprite.Sprite):
         offset += cost_title_rect.height + 5
 
         # Remove
-        if self.type != "empty":
+        if self.type != "empty" and self.construct:
             self.remove_button_rect.x = self.info_position[0] + 5
             self.remove_button_rect.y = self.info_position[1] + info_size[1] - self.remove_button_rect.height
             surface.blit(self.remove_button, self.remove_button_rect)
