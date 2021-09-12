@@ -3,9 +3,6 @@ from envVar import *
 
 from citizen import path_finding
 
-# TODO: Market in iso
-# TODO: Zoom quality bug
-
 # PyGame init
 pygame.init()
 
