@@ -1,7 +1,10 @@
 from game import Game
 from envVar import *
 
+from citizen import path_finding
+
 # TODO: Market in iso
+# TODO: Zoom quality bug
 
 # PyGame init
 pygame.init()
@@ -28,6 +31,8 @@ running = True
 # Load the game
 game = Game(width, height)
 
+
+# path_finding()
 
 def quit_game():
     pygame.quit()
@@ -85,4 +90,4 @@ while running:
 
     # Update screen
     if running:
-        pygame.display.update()
+        pygame.display.flip()

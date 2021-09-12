@@ -1,7 +1,7 @@
 import pygame
 
 # Name
-GameName = 'Gestion Game'
+GameName = 'City Game'
 
 # Windows configuration
 windowBoarder = 50
@@ -10,8 +10,8 @@ windowBoarder = 50
 FPS_available = [25, 30, 45, 60, 75]
 resolution_available = ["720x480", "1280x720", "1920x1080", "Full screen"]
 
-nb_tile_x = 20
-nb_tile_y = 20
+nb_tile_x = 5
+nb_tile_y = 5
 
 default_res = dict(po=500,
                    food=0,
@@ -103,7 +103,8 @@ pygame.font.init()
 font = pygame.font.SysFont('Comic Sans MS', int((HUD_size - 2 * HUD_margin) / 2))
 GameNameFont = pygame.font.SysFont('Comic Sans MS', 50)
 GameMenuFont = pygame.font.SysFont('Comic Sans MS', 25)
+GameInfoFont = pygame.font.SysFont('Comic Sans MS', 20)
 
 # Debug
-showFPS = True
+showFPS = False
 showLoading = False

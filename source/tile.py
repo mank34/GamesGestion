@@ -26,6 +26,9 @@ class Tile(pygame.sprite.Sprite):
 
         self.gap_y = 0
 
+        self.show_information_enable = False
+        self.info_position = [0, 0, 0, 0]
+
     # Apply a filter on the over tile
     def set_over(self, isOver, tile_factor_size):
         self.shall_be_update = False
@@ -44,6 +47,7 @@ class Tile(pygame.sprite.Sprite):
         self.gap_y = (tileSize_y[new_type] - tileSize_y[self.type])
         self.rect.y -= self.gap_y / tile_factor_size
         self.type = new_type
+        self.shall_be_update = True
         self.set_image(tile_factor_size)
         self.set_prod()
         self.set_cost()
@@ -121,3 +125,114 @@ class Tile(pygame.sprite.Sprite):
             cond_4 = True
 
         return cond_1 and cond_2 and cond_3 and cond_4
+
+    def show_information(self, pos, window_width, surface):
+
+        self.show_information_enable = True
+
+        # Background
+        info_background_color = (128, 128, 128)
+        info_size = (200, 300)
+
+        if pos:
+            right = False
+            down = True
+            if pos[0] < (window_width - info_size[0]):
+                right = True
+
+            if pos[1] > info_size[1]:
+                down = False
+
+            if right:
+                pos_x = pos[0]
+            else:
+                pos_x = pos[0] - info_size[0]
+
+            if down:
+                pos_y = pos[1]
+            else:
+                pos_y = pos[1] - info_size[1]
+
+            self.info_position = [pos_x, pos_y, info_size[0], info_size[1]]
+        pygame.draw.rect(surface, info_background_color, self.info_position)
+
+        # Write information
+        # Name
+        name = GameInfoFont.render(self.type.upper(), False, (0, 0, 0))
+        name_rect = name.get_rect()
+        name_rect.x = self.info_position[0] + info_size[0] / 2 - name_rect.width / 2
+        name_rect.y = self.info_position[1]
+        surface.blit(name, name_rect)
+
+        # Production
+        prod_title = GameInfoFont.render("Prod / day: ", False, (0, 0, 0))
+        prod_title_rect = prod_title.get_rect()
+        prod_title_rect.x = self.info_position[0] + 5
+        prod_title_rect.y = self.info_position[1] + name_rect.height + 5
+        surface.blit(prod_title, prod_title_rect)
+
+        cnt_prod = 0
+        for prod in self.production:
+            if self.production[prod] > 0:
+                image = resource["hud_res_" + prod]
+                image = pygame.transform.scale(image, (int(Mousse_icon_size / 2), int(Mousse_icon_size / 2)))
+                image_rect = image.get_rect()
+
+                prod_name = GameInfoFont.render(str(self.production[prod]), False, (0, 0, 0))
+                prod_name_rect = prod_name.get_rect()
+
+                image_rect.x = self.info_position[0] + cnt_prod * (image_rect.width + prod_name_rect.width + 10)
+                image_rect.y = self.info_position[1] + 8 + 2 * name_rect.height
+
+                prod_name_rect.x = self.info_position[0] + image_rect.width + 5 + cnt_prod * (image_rect.width +
+                                                                                              prod_name_rect.width + 10)
+                prod_name_rect.y = self.info_position[1] + 2 * name_rect.height
+
+                surface.blit(image, image_rect)
+                surface.blit(prod_name, prod_name_rect)
+
+                cnt_prod += 1
+
+        if cnt_prod == 0:
+            prod_name = GameInfoFont.render("   None", False, (0, 0, 0))
+            prod_name_rect = prod_name.get_rect()
+            prod_name_rect.x = self.info_position[0] + 5
+            prod_name_rect.y = self.info_position[1] + 5 + (2 + cnt_prod) * name_rect.height
+            surface.blit(prod_name, prod_name_rect)
+            cnt_prod += 1
+
+        # Cost
+        cost_title = GameInfoFont.render("Cost / day: ", False, (0, 0, 0))
+        cost_title_rect = cost_title.get_rect()
+        cost_title_rect.x = self.info_position[0] + 5
+        cost_title_rect.y = self.info_position[1] + 10 + 3 * name_rect.height
+        surface.blit(cost_title, cost_title_rect)
+
+        cnt = 0
+        for cost in self.cost:
+            if self.cost[cost] > 0:
+                image = resource["hud_res_" + cost]
+                image = pygame.transform.scale(image, (int(Mousse_icon_size / 2), int(Mousse_icon_size / 2)))
+                image_rect = image.get_rect()
+
+                cost_name = GameInfoFont.render(str(self.cost[cost]), False, (0, 0, 0))
+                cost_name_rect = cost_name.get_rect()
+
+                image_rect.x = self.info_position[0] + cnt * (image_rect.width + cost_name_rect.width + 10)
+                image_rect.y = self.info_position[1] + 15 + 4 * name_rect.height
+
+                cost_name_rect.x = self.info_position[0] + image_rect.width + 5 + cnt * (image_rect.width +
+                                                                                         cost_name_rect.width + 10)
+                cost_name_rect.y = self.info_position[1] + 4 * name_rect.height + 6
+
+                surface.blit(image, image_rect)
+                surface.blit(cost_name, cost_name_rect)
+
+                cnt += 1
+
+        if cnt == 0:
+            cost_name = GameInfoFont.render("   None", False, (0, 0, 0))
+            cost_name_rect = cost_name.get_rect()
+            cost_name_rect.x = self.info_position[0] + 5
+            cost_name_rect.y = self.info_position[1] + 10 + (3 + cnt_prod + cnt) * name_rect.height
+            surface.blit(cost_name, cost_name_rect)

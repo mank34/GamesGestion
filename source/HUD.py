@@ -29,7 +29,6 @@ class HUD(pygame.sprite.Sprite):
         # Parent >= 20 == resource information
         self.HUD_resource_button = {}
         for i in range(len(HUD_resource)):
-            print(len(HUD_resource) - i - 1)
             index = len(HUD_resource) - i - 1
             self.HUD_resource_button[HUD_resource[index]] = HUD_button(20 + i, resource[HUD_resource[index]],
                                                                        self.width, self.height, 0, HUD_resource[index])
