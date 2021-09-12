@@ -1,6 +1,7 @@
 from HUD import HUD
 from citizen import citizen
 from configMenu import configMenu
+from soundMenu import SoundMenu
 from envVar import *
 from mainMenu import mainMenu
 from mousseIcon import MousseIcon
@@ -20,12 +21,14 @@ class Game:
         self.is_starting = False
         self.is_pausing = False
         self.in_configuring = False
+        self.in_sound_menu = False
 
         # Game menu
         self.main_menu = mainMenu(w, h)
 
         # Config menu
         self.config_menu = configMenu(w, h)
+        self.sound_menu = SoundMenu(w, h)
 
         # Init var to count a day duration
         self.cnt_day = 0

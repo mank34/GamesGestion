@@ -1,5 +1,7 @@
 import pygame
 
+pygame.mixer.init()
+
 # Name
 GameName = 'City Game'
 
@@ -16,6 +18,11 @@ nb_tile_y = 5
 default_res = dict(po=500,
                    food=0,
                    wood=10)
+
+main_sound = pygame.mixer.Sound("../asset/sound/main_sound.mp3")
+sound_end = dict(empty=pygame.mixer.Sound("../asset/sound/end_farm.wav"),
+                 farm=pygame.mixer.Sound("../asset/sound/end_farm.wav"),
+                 market=pygame.mixer.Sound("../asset/sound/end_farm.wav"))
 
 # Tile configuration
 tileSize_x = 127
@@ -102,8 +109,8 @@ wood_cost = dict(empty=0,
 day_duration = 30000
 
 # Construction time
-construction_time = dict(empty=day_duration*0,
-                         farm=day_duration * 3,
+construction_time = dict(empty=day_duration * 0,
+                         farm=day_duration * 1,
                          market=day_duration * 3)
 
 # Font

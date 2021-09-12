@@ -3,6 +3,8 @@ from envVar import *
 
 from citizen import path_finding
 
+# TODO: End sound for the destruction and the market
+
 # PyGame init
 pygame.init()
 
@@ -28,6 +30,9 @@ running = True
 # Load the game
 game = Game(width, height)
 
+# Music
+main_sound.play(-1)
+
 
 # path_finding()
 
@@ -48,7 +53,9 @@ while running:
     screen.blit(background, (0, 0))
 
     # The game is update only if is_starting is true
-    if game.in_configuring:
+    if game.in_sound_menu:
+        game.sound_menu.update(screen)
+    elif game.in_configuring:
         game.config_menu.update(screen)
     elif game.is_starting:
         game.update(screen)
@@ -63,8 +70,11 @@ while running:
         if event.type == pygame.QUIT:
             running = quit_game()
 
+        elif game.in_sound_menu:
+            game.in_sound_menu = game.sound_menu.check_event(event)
+
         elif game.in_configuring:
-            res = game.config_menu.check_event(event)
+            res, game.in_sound_menu = game.config_menu.check_event(event)
             if res != "NULL":
                 game.in_configuring = False
                 # if res == "Full screen":

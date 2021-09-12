@@ -145,6 +145,7 @@ class Tile(pygame.sprite.Sprite):
 
         if self.cnt_construct >= (construction_time[self.type] / FPS) and not self.construct:
             self.construct = True
+            sound_end[self.type].play(0, 1000)
             self.gap_y = (tileSize_y[self.type] - tileSize_y["empty"])
             self.rect.y -= self.gap_y / tile_factor_size
 

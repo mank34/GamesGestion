@@ -50,10 +50,15 @@ class configMenu:
         self.moreRes_button_rect.x = int(self.resolution_rect.x +
                                          self.resolution_rect.width + self.moreRes_button_rect.width)
 
+        self.sound_button = GameMenuFont.render("Sound", False, (0, 0, 0))
+        self.sound_button_rect = self.sound_button.get_rect()
+        self.sound_button_rect.x = int(self.width / 2 - self.sound_button_rect.width / 2)
+        self.sound_button_rect.y = int(self.height * 0.6)
+
         self.back_button = GameMenuFont.render("Back", False, (0, 0, 0))
         self.back_button_rect = self.back_button.get_rect()
         self.back_button_rect.x = int(self.width/2 - self.back_button_rect.width/2)
-        self.back_button_rect.y = int(self.height * 0.6)
+        self.back_button_rect.y = int(self.height * 0.7)
 
     def update(self, screen):
         screen.blit(self.name, self.name_rect)
@@ -64,12 +69,15 @@ class configMenu:
         screen.blit(self.resolution, self.resolution_rect)
         screen.blit(self.moreRes_button, self.moreRes_button_rect)
         screen.blit(self.back_button, self.back_button_rect)
+        screen.blit(self.sound_button, self.sound_button_rect)
 
     def check_event(self, event):
+        enter_sound_menu = False
+
         # Mouse event - clique left
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed(3)[0]:
             if self.back_button_rect.collidepoint(pygame.mouse.get_pos()):
-                return resolution_available[self.res_selected]
+                return resolution_available[self.res_selected], False
 
             elif self.lessFPS_button_rect.collidepoint(pygame.mouse.get_pos()):
                 if self.FPS_selected > 0:
@@ -94,5 +102,7 @@ class configMenu:
                     self.res_selected += 1
                     self.resolution = GameMenuFont.render("Resolution: " + str(resolution_available[self.res_selected]),
                                                           False, (0, 0, 0))
+            elif self.sound_button_rect.collidepoint(pygame.mouse.get_pos()):
+                enter_sound_menu = True
 
-        return "NULL"
+        return "NULL", enter_sound_menu
