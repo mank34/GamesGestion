@@ -16,6 +16,8 @@ class Tile(pygame.sprite.Sprite):
         self.cost = {}
         self.set_cost()
 
+        self.shall_be_update = True
+        self.is_Over = False
         self.set_image(tile_factor_size)
 
         self.rect = self.image.get_rect()
@@ -26,14 +28,21 @@ class Tile(pygame.sprite.Sprite):
 
     # Apply a filter on the over tile
     def set_over(self, isOver, tile_factor_size):
+        self.shall_be_update = False
+        if not isOver and self.is_Over:
+            self.shall_be_update = True
+            self.is_Over = False
+
         self.set_image(tile_factor_size)
-        if isOver:
+        if isOver and not self.is_Over:
+            self.shall_be_update = True
+            self.is_Over = True
             self.set_filter()
 
     # Change the tile's type (level reset)
     def update_in(self, new_type, tile_factor_size):
         self.gap_y = (tileSize_y[new_type] - tileSize_y[self.type])
-        self.rect.y -= self.gap_y/tile_factor_size
+        self.rect.y -= self.gap_y / tile_factor_size
         self.type = new_type
         self.set_image(tile_factor_size)
         self.set_prod()
@@ -53,10 +62,12 @@ class Tile(pygame.sprite.Sprite):
 
     # Set the image
     def set_image(self, tile_factor_size):
-        self.image = resource[self.type]
+        if self.shall_be_update:
+            self.image = resource[self.type]
+            self.shall_be_update = False
         self.image = pygame.transform.scale(self.image,
                                             (int(tileSize_x / tile_factor_size),
-                                             int((tileSize_base+tileSize_y[self.type]) / tile_factor_size)))
+                                             int((tileSize_base + tileSize_y[self.type]) / tile_factor_size)))
 
     def set_prod(self):
         self.production = dict(po=po_production[self.type],
@@ -71,7 +82,7 @@ class Tile(pygame.sprite.Sprite):
     def is_in(self, tile_factor_size, point):
 
         A = (self.rect.x + tileSize_x / 2 / tile_factor_size,
-             self.rect.y + (tileSize_y[self.type] - tileSize_y["empty"])/tile_factor_size)
+             self.rect.y + (tileSize_y[self.type] - tileSize_y["empty"]) / tile_factor_size)
         B = (self.rect.x, self.rect.y + tileSize_y["empty"] / 2 / tile_factor_size)
         C = (self.rect.x + tileSize_x / 2 / tile_factor_size,
              self.rect.y + tileSize_y[self.type] / tile_factor_size)

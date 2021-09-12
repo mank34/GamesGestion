@@ -75,17 +75,16 @@ class Game:
     def update(self, screen):
 
         # Display tile
+        update_screen = False
         for tileName in self.tiles:
-            screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
+            if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
+                    self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
 
-        # Display HUD
-        self.hud.show_HUD(screen, self.show_HUD)
+                self.tiles[tileName].set_over(self.tiles[tileName].is_in(
+                    self.tile_factor_size, pygame.mouse.get_pos()), self.tile_factor_size)
 
-        # Mousse icon
-        if self.mousseIcon.isEnable:
-            self.mousseIcon.rect.x = pygame.mouse.get_pos()[0]
-            self.mousseIcon.rect.y = pygame.mouse.get_pos()[1]
-            screen.blit(self.mousseIcon.icon, self.mousseIcon.rect)
+                if self.tiles[tileName].shall_be_update:
+                    update_screen = True
 
         # Manage day
         self.cnt_day += 1
@@ -96,11 +95,6 @@ class Game:
             self.nb_day += 1
             print("Day " + str(self.nb_day))
 
-        # Check mouse position
-        for tileName in self.tiles:
-            self.tiles[tileName].set_over(self.tiles[tileName].is_in(self.tile_factor_size, pygame.mouse.get_pos()),
-                                          self.tile_factor_size)
-
         # Camera move only if all the menu are close
         cam_move = True
         for menu_HUD in self.show_HUD:
@@ -108,15 +102,17 @@ class Game:
                 cam_move = False
 
         if cam_move:
-            self.move()
+            update_screen = update_screen or self.move()
 
+        # Citizen
         self.cnt_move_entity += 1
         if self.cnt_move_entity > 1500 / FPS_available[self.config_menu.FPS_selected]:
             self.citizen.move()
             self.cnt_move_entity = 0
             for tileName in self.tiles:
                 if self.tiles[tileName].is_in(self.tile_factor_size,
-                                              (self.citizen.rect.x+citizen_size_x, self.citizen.rect.y+citizen_size_y)):
+                                              (self.citizen.rect.x + citizen_size_x,
+                                               self.citizen.rect.y + citizen_size_y)):
 
                     if tileName != self.citizen.current_tile and self.change_dir:
                         # self.citizen.direction = randint(0, 3)
@@ -128,6 +124,23 @@ class Game:
                     self.citizen.current_tile = tileName
                     print("citizen is in " + tileName)
         screen.blit(self.citizen.image, self.citizen.rect)
+
+        # Tile
+        if update_screen:
+            for tileName in self.tiles:
+                if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
+                        self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
+
+                    screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
+
+        # Display HUD
+        self.hud.show_HUD(screen, self.show_HUD)
+
+        # Mousse icon
+        if self.mousseIcon.isEnable:
+            self.mousseIcon.rect.x = pygame.mouse.get_pos()[0]
+            self.mousseIcon.rect.y = pygame.mouse.get_pos()[1]
+            screen.blit(self.mousseIcon.icon, self.mousseIcon.rect)
 
     def move(self):
 
@@ -172,6 +185,8 @@ class Game:
             self.cam_pos["x"] -= self.cam_velocity * right
             self.cam_pos["y"] += self.cam_velocity * up
             self.cam_pos["y"] -= self.cam_velocity * down
+
+        return left or right or up or down
 
     def update_prod_value(self):
         for tileName in self.tiles:

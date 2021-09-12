@@ -13,7 +13,8 @@ resolution = pygame.display.Info()  # Get the users resolution
 width = 700  # resolution.current_w
 height = 700  # resolution.current_h
 
-screen = pygame.display.set_mode((width, height))  # , pygame.FULLSCREEN | pygame.SCALED)
+screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF, 16)  # , pygame.FULLSCREEN | pygame.SCALED)
+screen.set_alpha(None)
 
 # Load BackGround
 background = pygame.image.load(BGpath)
@@ -64,11 +65,11 @@ while running:
             res = game.config_menu.check_event(event)
             if res != "NULL":
                 game.in_configuring = False
-                if res == "Full screen":
-                    screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN | pygame.SCALED)
-                else:
-                    # screen = pygame.display.set_mode((int(res.split('x')[0]), int(res.split('x')[1])))
-                    screen = pygame.display.set_mode((500, 500))
+                # if res == "Full screen":
+                #    screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN | pygame.SCALED)
+                # else:
+                # screen = pygame.display.set_mode((int(res.split('x')[0]), int(res.split('x')[1])))
+                #   screen = pygame.display.set_mode((500, 500))
 
         elif game.is_starting:
             game.check_game_event(event, screen)
@@ -84,4 +85,4 @@ while running:
 
     # Update screen
     if running:
-        pygame.display.flip()
+        pygame.display.update()

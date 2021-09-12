@@ -12,7 +12,7 @@ class configMenu:
 
         self.name = GameNameFont.render("Option", False, (0, 0, 0))
         self.name_rect = self.name.get_rect()
-        self.name_rect.x = int(self.width - self.name_rect.width / 2)
+        self.name_rect.x = int(self.width/2 - self.name_rect.width / 2)
         self.name_rect.y = int(self.height * 0.25)
 
         self.lessFPS_button = GameMenuFont.render("<-", False, (0, 0, 0))
@@ -27,7 +27,7 @@ class configMenu:
         self.moreFPS_button_rect = self.moreFPS_button.get_rect()
         self.moreFPS_button_rect.y = int(self.height * 0.4)
 
-        self.limitFPS_rect.x = int(self.width - self.limitFPS_rect.width/2)
+        self.limitFPS_rect.x = int(self.width/2 - self.limitFPS_rect.width/2)
         self.lessFPS_button_rect.x = int(self.limitFPS_rect.x - self.lessFPS_button_rect.width)
         self.moreFPS_button_rect.x = int(self.limitFPS_rect.x +
                                          self.limitFPS_rect.width + self.moreFPS_button_rect.width)
@@ -45,14 +45,14 @@ class configMenu:
         self.moreRes_button_rect = self.moreRes_button.get_rect()
         self.moreRes_button_rect.y = int(self.height * 0.5)
 
-        self.resolution_rect.x = int(self.width - self.resolution_rect.width/2)
+        self.resolution_rect.x = int(self.width/2 - self.resolution_rect.width/2)
         self.lessRes_button_rect.x = int(self.resolution_rect.x - self.lessRes_button_rect.width)
         self.moreRes_button_rect.x = int(self.resolution_rect.x +
                                          self.resolution_rect.width + self.moreRes_button_rect.width)
 
         self.back_button = GameMenuFont.render("Back", False, (0, 0, 0))
         self.back_button_rect = self.back_button.get_rect()
-        self.back_button_rect.x = int(self.width * 0.46)
+        self.back_button_rect.x = int(self.width/2 - self.back_button_rect.width/2)
         self.back_button_rect.y = int(self.height * 0.6)
 
     def update(self, screen):
