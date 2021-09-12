@@ -10,8 +10,8 @@ pygame.init()
 pygame.display.set_caption(GameName)
 
 resolution = pygame.display.Info()  # Get the users resolution
-width = 500  # resolution.current_w
-height = 500  # resolution.current_h
+width = 700  # resolution.current_w
+height = 700  # resolution.current_h
 
 screen = pygame.display.set_mode((width, height))  # , pygame.FULLSCREEN | pygame.SCALED)
 

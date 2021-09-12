@@ -18,10 +18,13 @@ default_res = dict(po=500,
                    wood=10)
 
 # Tile configuration
-tileSize_x = 128
+tileSize_x = 127
 tileSize_base = 64
-tileSize_y = dict(empty=64,
+tileSize_y = dict(empty=63,
                   farm=79)
+
+citizen_size_x = 12
+citizen_size_y = 24
 
 # HUD configuration
 HUD_size = 50

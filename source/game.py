@@ -1,4 +1,5 @@
 from HUD import HUD
+from citizen import citizen
 from configMenu import configMenu
 from envVar import *
 from mainMenu import mainMenu
@@ -13,7 +14,7 @@ class Game:
         self.width = w
         self.height = h
 
-        self.tile_factor_size = 2
+        self.tile_factor_size = 1
 
         # Flag to known the game state
         self.is_starting = False
@@ -28,6 +29,7 @@ class Game:
 
         # Init var to count a day duration
         self.cnt_day = 0
+        self.cnt_move_entity = 0
         self.nb_day = 1
 
         # Flag to enable the HUD menu
@@ -66,7 +68,12 @@ class Game:
         # Mousse icon
         self.mousseIcon = MousseIcon()
 
+        # Citizen
+        self.change_dir = True
+        self.citizen = citizen()
+
     def update(self, screen):
+
         # Display tile
         for tileName in self.tiles:
             screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
@@ -91,7 +98,8 @@ class Game:
 
         # Check mouse position
         for tileName in self.tiles:
-            self.tiles[tileName].set_over(self.tiles[tileName].is_in(self.tile_factor_size), self.tile_factor_size)
+            self.tiles[tileName].set_over(self.tiles[tileName].is_in(self.tile_factor_size, pygame.mouse.get_pos()),
+                                          self.tile_factor_size)
 
         # Camera move only if all the menu are close
         cam_move = True
@@ -101,6 +109,25 @@ class Game:
 
         if cam_move:
             self.move()
+
+        self.cnt_move_entity += 1
+        if self.cnt_move_entity > 1500 / FPS_available[self.config_menu.FPS_selected]:
+            self.citizen.move()
+            self.cnt_move_entity = 0
+            for tileName in self.tiles:
+                if self.tiles[tileName].is_in(self.tile_factor_size,
+                                              (self.citizen.rect.x+citizen_size_x, self.citizen.rect.y+citizen_size_y)):
+
+                    if tileName != self.citizen.current_tile and self.change_dir:
+                        # self.citizen.direction = randint(0, 3)
+                        self.citizen.move()
+                        self.change_dir = False
+                    else:
+                        self.change_dir = True
+
+                    self.citizen.current_tile = tileName
+                    print("citizen is in " + tileName)
+        screen.blit(self.citizen.image, self.citizen.rect)
 
     def move(self):
 
@@ -180,7 +207,7 @@ class Game:
 
                 else:
                     for tileName in self.tiles:
-                        if self.tiles[tileName].is_in(self.tile_factor_size):
+                        if self.tiles[tileName].is_in(self.tile_factor_size, pygame.mouse.get_pos()):
                             print("Tile " + tileName + " clicked")
                             if self.mousseIcon.isEnable:
                                 self.tiles[tileName].update_in(self.mousseIcon.item_selected, self.tile_factor_size)

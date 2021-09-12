@@ -68,8 +68,7 @@ class Tile(pygame.sprite.Sprite):
                          food=food_cost[self.type],
                          wood=wood_cost[self.type])
 
-    def is_in(self, tile_factor_size):
-        point = pygame.mouse.get_pos()
+    def is_in(self, tile_factor_size, point):
 
         A = (self.rect.x + tileSize_x / 2 / tile_factor_size,
              self.rect.y + (tileSize_y[self.type] - tileSize_y["empty"])/tile_factor_size)
