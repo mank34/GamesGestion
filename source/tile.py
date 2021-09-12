@@ -24,6 +24,7 @@ class Tile(pygame.sprite.Sprite):
         self.set_image(tile_factor_size)
 
         self.rect = self.image.get_rect()
+
         self.rect.x = pos_x
         self.rect.y = pos_y
 
@@ -148,16 +149,28 @@ class Tile(pygame.sprite.Sprite):
             self.rect.y -= self.gap_y / tile_factor_size
 
         if not self.construct:
-            background_progress = [self.rect.x + self.rect.width / 2 - int(self.rect.width * 0.7 / 2),
-                                   self.rect.y + tileSize_y["empty"] / 2 - int(self.rect.width * 0.1 / 2),
-                                   int(self.rect.width * 0.7), int(self.rect.width * 0.1)]
+            background_progress = [self.rect.x + self.rect.width / 2 -
+                                   int(self.rect.width * 0.7 / 2),
+
+                                   self.rect.y + (tileSize_y["empty"] / tile_factor_size) / 2 -
+                                   int(self.rect.width * 0.1 / 2),
+
+                                   int(self.rect.width * 0.7),
+
+                                   int(self.rect.width * 0.1)]
             pygame.draw.rect(surface, background_color, background_progress)
 
             progress_percent = self.cnt_construct / (construction_time[self.type] / FPS)
 
-            progress = [self.rect.x + self.rect.width / 2 - int(self.rect.width * 0.7 / 2),
-                        self.rect.y + tileSize_y["empty"] / 2 - int(self.rect.width * 0.1 / 2),
-                        int(self.rect.width * 0.7 * progress_percent), int(self.rect.width * 0.1)]
+            progress = [self.rect.x + self.rect.width / 2 -
+                        int(self.rect.width * 0.7 / 2),
+
+                        self.rect.y + (tileSize_y["empty"] / tile_factor_size) / 2 -
+                        int(self.rect.width * 0.1 / 2),
+
+                        int(self.rect.width * progress_percent * 0.7),
+
+                        int(self.rect.width * 0.1)]
             pygame.draw.rect(surface, progress_color, progress)
 
         else:

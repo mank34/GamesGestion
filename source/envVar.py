@@ -10,8 +10,8 @@ windowBoarder = 50
 FPS_available = [25, 30, 45, 60, 75]
 resolution_available = ["720x480", "1280x720", "1920x1080", "Full screen"]
 
-nb_tile_x = 5
-nb_tile_y = 5
+nb_tile_x = 1
+nb_tile_y = 1
 
 default_res = dict(po=500,
                    food=0,

@@ -267,18 +267,18 @@ class Game:
             self.is_pausing = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
-            self.tile_factor_size -= 0.4
-            if self.tile_factor_size <= 1:
+            self.tile_factor_size -= 1
+            if self.tile_factor_size < 1:
                 self.tile_factor_size = 1
-
-            self.update_tiles_resizing(screen)
+            else:
+                self.update_tiles_resizing(screen)
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
-            self.tile_factor_size += 0.4
-            if self.tile_factor_size >= 5:
+            self.tile_factor_size += 1
+            if self.tile_factor_size > 5:
                 self.tile_factor_size = 5
-
-            self.update_tiles_resizing(screen)
+            else:
+                self.update_tiles_resizing(screen)
 
     def calculate_positioning(self, x, y, gap_y):
         pos_x = self.width / 2 + (x - y) * (
@@ -289,6 +289,10 @@ class Game:
         return pos_x, pos_y
 
     def update_tiles_resizing(self, screen):
+        if self.init:
+            for tileName in self.tiles:
+                self.tiles[tileName].set_image(self.tile_factor_size)
+
         for y in range(nb_tile_y):
             for x in range(nb_tile_x):
                 pos_x, pos_y = self.calculate_positioning(x, y, self.tiles[str(y * nb_tile_x + x)].gap_y)
@@ -297,10 +301,8 @@ class Game:
         self.game_zone_x = (tileSize_x / self.tile_factor_size) * nb_tile_x
         self.game_zone_y = (tileSize_y["empty"] / self.tile_factor_size) * nb_tile_y
 
-        if self.init:
-            for tileName in self.tiles:
-                self.tiles[tileName].set_image(self.tile_factor_size)
-                screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
+        for tileName in self.tiles:
+            screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
 
     def disable_all_tile_information(self):
         for tileName in self.tiles:
