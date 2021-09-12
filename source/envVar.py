@@ -98,12 +98,20 @@ wood_cost = dict(empty=0,
                  farm=0,
                  market=0)
 
+day_duration = 30000
+
+# Construction time
+construction_time = dict(empty=day_duration * 3,
+                         farm=day_duration * 3,
+                         market=day_duration * 3)
+
 # Font
 pygame.font.init()
 font = pygame.font.SysFont('Comic Sans MS', int((HUD_size - 2 * HUD_margin) / 2))
 GameNameFont = pygame.font.SysFont('Comic Sans MS', 50)
 GameMenuFont = pygame.font.SysFont('Comic Sans MS', 25)
 GameInfoFont = pygame.font.SysFont('Comic Sans MS', 20)
+GameCommentFont = pygame.font.SysFont('Comic Sans MS', 15)
 
 # Debug
 showFPS = False

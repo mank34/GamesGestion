@@ -16,6 +16,9 @@ class Tile(pygame.sprite.Sprite):
         self.cost = {}
         self.set_cost()
 
+        self.construct = True
+        self.cnt_construct = 0
+
         self.shall_be_update = True
         self.is_Over = False
         self.set_image(tile_factor_size)
@@ -34,23 +37,21 @@ class Tile(pygame.sprite.Sprite):
 
     # Apply a filter on the over tile
     def set_over(self, isOver, tile_factor_size):
-        self.shall_be_update = False
         if not isOver and self.is_Over:
-            self.shall_be_update = True
             self.is_Over = False
 
         self.set_image(tile_factor_size)
-        if isOver and not self.is_Over:
-            self.shall_be_update = True
+        if isOver:
             self.is_Over = True
             self.set_filter()
 
     # Change the tile's type (level reset)
     def update_in(self, new_type, tile_factor_size):
-        self.gap_y = (tileSize_y[new_type] - tileSize_y[self.type])
+        self.gap_y = (tileSize_y["empty"] - tileSize_y[self.type])
         self.rect.y -= self.gap_y / tile_factor_size
         self.type = new_type
         self.shall_be_update = True
+        self.construct = False
         self.set_image(tile_factor_size)
         self.set_prod()
         self.set_cost()
@@ -69,12 +70,19 @@ class Tile(pygame.sprite.Sprite):
 
     # Set the image
     def set_image(self, tile_factor_size):
-        if self.shall_be_update:
+        if self.construct:
             self.image = resource[self.type]
-            self.shall_be_update = False
-        self.image = pygame.transform.scale(self.image,
-                                            (int(tileSize_x / tile_factor_size),
-                                             int((tileSize_base + tileSize_y[self.type]) / tile_factor_size)))
+        else:
+            self.image = resource["empty"]
+
+        if self.construct:
+            self.image = pygame.transform.scale(self.image,
+                                                (int(tileSize_x / tile_factor_size),
+                                                 int((tileSize_base + tileSize_y[self.type]) / tile_factor_size)))
+        else:
+            self.image = pygame.transform.scale(self.image,
+                                                (int(tileSize_x / tile_factor_size),
+                                                 int((tileSize_base + tileSize_y["empty"]) / tile_factor_size)))
 
     def set_prod(self):
         self.production = dict(po=po_production[self.type],
@@ -129,6 +137,32 @@ class Tile(pygame.sprite.Sprite):
 
         return cond_1 and cond_2 and cond_3 and cond_4
 
+    def show_progress_construction(self, surface, FPS, tile_factor_size):
+        background_color = (128, 128, 128)
+        progress_color = (0, 255, 0)
+        self.cnt_construct += 1
+
+        if self.cnt_construct >= (construction_time[self.type] / FPS) and not self.construct:
+            self.construct = True
+            self.gap_y = (tileSize_y[self.type] - tileSize_y["empty"])
+            self.rect.y -= self.gap_y / tile_factor_size
+
+        if not self.construct:
+            background_progress = [self.rect.x + self.rect.width / 2 - int(self.rect.width * 0.7 / 2),
+                                   self.rect.y + tileSize_y["empty"] / 2 - int(self.rect.width * 0.1 / 2),
+                                   int(self.rect.width * 0.7), int(self.rect.width * 0.1)]
+            pygame.draw.rect(surface, background_color, background_progress)
+
+            progress_percent = self.cnt_construct / (construction_time[self.type] / FPS)
+
+            progress = [self.rect.x + self.rect.width / 2 - int(self.rect.width * 0.7 / 2),
+                        self.rect.y + tileSize_y["empty"] / 2 - int(self.rect.width * 0.1 / 2),
+                        int(self.rect.width * 0.7 * progress_percent), int(self.rect.width * 0.1)]
+            pygame.draw.rect(surface, progress_color, progress)
+
+        else:
+            self.cnt_construct = 0
+
     def show_information(self, pos, window_width, surface):
 
         self.show_information_enable = True
@@ -166,13 +200,23 @@ class Tile(pygame.sprite.Sprite):
         name_rect.x = self.info_position[0] + info_size[0] / 2 - name_rect.width / 2
         name_rect.y = self.info_position[1]
         surface.blit(name, name_rect)
+        offset = name_rect.height + 5
+
+        if not self.construct:
+            construct = GameCommentFont.render("Construction in progress", False, (0, 0, 0))
+            construct_rect = construct.get_rect()
+            construct_rect.x = self.info_position[0] + info_size[0] / 2 - construct_rect.width / 2
+            construct_rect.y = self.info_position[1] + offset
+            surface.blit(construct, construct_rect)
+            offset += construct_rect.height + 5
 
         # Production
         prod_title = GameInfoFont.render("Prod / day: ", False, (0, 0, 0))
         prod_title_rect = prod_title.get_rect()
         prod_title_rect.x = self.info_position[0] + 5
-        prod_title_rect.y = self.info_position[1] + name_rect.height + 5
+        prod_title_rect.y = self.info_position[1] + offset
         surface.blit(prod_title, prod_title_rect)
+        offset += prod_title_rect.height
 
         cnt_prod = 0
         for prod in self.production:
@@ -185,11 +229,11 @@ class Tile(pygame.sprite.Sprite):
                 prod_name_rect = prod_name.get_rect()
 
                 image_rect.x = self.info_position[0] + cnt_prod * (image_rect.width + prod_name_rect.width + 10)
-                image_rect.y = self.info_position[1] + 8 + 2 * name_rect.height
+                image_rect.y = self.info_position[1] + offset
 
                 prod_name_rect.x = self.info_position[0] + image_rect.width + 5 + cnt_prod * (image_rect.width +
                                                                                               prod_name_rect.width + 10)
-                prod_name_rect.y = self.info_position[1] + 2 * name_rect.height
+                prod_name_rect.y = self.info_position[1] + offset
 
                 surface.blit(image, image_rect)
                 surface.blit(prod_name, prod_name_rect)
@@ -200,16 +244,20 @@ class Tile(pygame.sprite.Sprite):
             prod_name = GameInfoFont.render("   None", False, (0, 0, 0))
             prod_name_rect = prod_name.get_rect()
             prod_name_rect.x = self.info_position[0] + 5
-            prod_name_rect.y = self.info_position[1] + 5 + (2 + cnt_prod) * name_rect.height
+            prod_name_rect.y = self.info_position[1] + offset
             surface.blit(prod_name, prod_name_rect)
             cnt_prod += 1
+
+        offset += prod_title_rect.height + 5
 
         # Cost
         cost_title = GameInfoFont.render("Cost / day: ", False, (0, 0, 0))
         cost_title_rect = cost_title.get_rect()
         cost_title_rect.x = self.info_position[0] + 5
-        cost_title_rect.y = self.info_position[1] + 10 + 3 * name_rect.height
+        cost_title_rect.y = self.info_position[1] + offset
         surface.blit(cost_title, cost_title_rect)
+
+        offset += cost_title_rect.height
 
         cnt = 0
         for cost in self.cost:
@@ -222,11 +270,11 @@ class Tile(pygame.sprite.Sprite):
                 cost_name_rect = cost_name.get_rect()
 
                 image_rect.x = self.info_position[0] + cnt * (image_rect.width + cost_name_rect.width + 10)
-                image_rect.y = self.info_position[1] + 15 + 4 * name_rect.height
+                image_rect.y = self.info_position[1] + offset
 
                 cost_name_rect.x = self.info_position[0] + image_rect.width + 5 + cnt * (image_rect.width +
                                                                                          cost_name_rect.width + 10)
-                cost_name_rect.y = self.info_position[1] + 4 * name_rect.height + 6
+                cost_name_rect.y = self.info_position[1] + offset
 
                 surface.blit(image, image_rect)
                 surface.blit(cost_name, cost_name_rect)
@@ -237,8 +285,10 @@ class Tile(pygame.sprite.Sprite):
             cost_name = GameInfoFont.render("   None", False, (0, 0, 0))
             cost_name_rect = cost_name.get_rect()
             cost_name_rect.x = self.info_position[0] + 5
-            cost_name_rect.y = self.info_position[1] + 10 + (3 + cnt_prod + cnt) * name_rect.height
+            cost_name_rect.y = self.info_position[1] + offset
             surface.blit(cost_name, cost_name_rect)
+
+        offset += cost_title_rect.height + 5
 
         # Remove
         if self.type != "empty":

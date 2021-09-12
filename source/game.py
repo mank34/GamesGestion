@@ -88,7 +88,7 @@ class Game:
 
         # Manage day
         self.cnt_day += 1
-        if self.cnt_day > 30000 / FPS_available[self.config_menu.FPS_selected]:
+        if self.cnt_day > day_duration / FPS_available[self.config_menu.FPS_selected]:
             # Update resource
             self.update_prod_value()
             self.cnt_day = 0
@@ -116,6 +116,9 @@ class Game:
                 if self.width >= self.tiles[tileName].rect.x >= -tileSize_x and \
                         self.height >= self.tiles[tileName].rect.y >= -tileSize_y[self.tiles[tileName].type]:
                     screen.blit(self.tiles[tileName].image, self.tiles[tileName].rect)
+
+                self.tiles[tileName].show_progress_construction(screen, FPS_available[self.config_menu.FPS_selected],
+                                                                self.tile_factor_size)
 
         # Citizen
         self.cnt_move_entity += 1
