@@ -93,7 +93,12 @@ class Game:
             self.update_prod_value()
             self.cnt_day = 0
             self.nb_day += 1
-            print("Day " + str(self.nb_day))
+
+        day_information = GameInfoFont.render("Day " + str(self.nb_day), False, (0, 0, 0))
+        day_information_rect = day_information.get_rect()
+        day_information_rect.x = 10
+        day_information_rect.y = 10
+        screen.blit(day_information, day_information_rect)
 
         # Camera move only if all the menu are close
         cam_move = True
