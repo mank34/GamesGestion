@@ -29,6 +29,9 @@ class Tile(pygame.sprite.Sprite):
         self.show_information_enable = False
         self.info_position = [0, 0, 0, 0]
 
+        self.remove_button = GameInfoFont.render("Destroy", False, (0, 0, 0))
+        self.remove_button_rect = self.remove_button.get_rect()
+
     # Apply a filter on the over tile
     def set_over(self, isOver, tile_factor_size):
         self.shall_be_update = False
@@ -236,3 +239,9 @@ class Tile(pygame.sprite.Sprite):
             cost_name_rect.x = self.info_position[0] + 5
             cost_name_rect.y = self.info_position[1] + 10 + (3 + cnt_prod + cnt) * name_rect.height
             surface.blit(cost_name, cost_name_rect)
+
+        # Remove
+        if self.type != "empty":
+            self.remove_button_rect.x = self.info_position[0] + 5
+            self.remove_button_rect.y = self.info_position[1] + info_size[1] - self.remove_button_rect.height
+            surface.blit(self.remove_button, self.remove_button_rect)
